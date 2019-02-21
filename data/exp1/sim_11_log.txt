@@ -1,0 +1,10 @@
+Cells: 100
+Mutations 1000
+TOT losses: 0
+FP rate: 0.250000
+FP rate: 0.000010
+NA rate: 0.200000
+False negatives added: 2970
+False positive added: 1
+Missing values added: 19904
+Deletion added: None
