@@ -5,6 +5,7 @@ from kmodes.kmodes import KModes
 from kmodes.util.dissim import matching_dissim, ng_dissim
 from collections import defaultdict
 
+# the conflict dissimilarity measure
 def conflict_dissim(a, b, **_) :
     v = np.vectorize(lambda ai, bi : ai != 2 and bi != 2 and ai != bi)
     return np.sum(v(a,b), axis = 1)
@@ -15,24 +16,8 @@ def choose_dissim(dstr) :
         return matching_dissim
     if dstr == 'ng' :
         return ng_dissim
-    if dstr == 'conflict' :
-        return conflict_dissim
-    # if dstr == 'likelihood' :
-    #     return likelihood_dissim
 
-    return None
-
-# gather false postive/negative rates from a file
-def obtain_rates(filename) :
-
-    rates = []
-    for line in open(filename, 'r') :
-        if 'rate:' in line :
-            rates.append(float(line.split()[-1]))
-
-    a,b,c = rates
-
-    return a,b
+    return conflict_dissim # default
 
 #
 # Parser
@@ -50,21 +35,25 @@ parser.add_argument(
     type = str, default = sys.stdin,
     help = 'input file',
     required=True)
+
 parser.add_argument(
     '-m', '--method',
     metavar = 'METHOD', dest = 'method',
     type = str, default = 'huang',
     help = 'initialization method')
+
 parser.add_argument(
     '-d', '--dissim',
     metavar = 'DISSIM', dest = 'dissim',
     type = str, default = 'conflict',
-    help = 'dissimilarity function')
+    help = 'dissimilarity measure')
+
 parser.add_argument(
     '-n', '--n_inits',
     metavar = 'N', dest = 'n',
     type = int, default = 10,
     help = 'number of iterations')
+
 parser.add_argument(
     '-k', '--kmodes',
     metavar = 'K', dest = 'k',
@@ -76,10 +65,12 @@ parser.add_argument(
     metavar = 'LABELS', dest = 'labels',
     type = str, default = None,
     help = 'label file')
+
 parser.add_argument('-o', 
     '--outdir', action='store', 
     type=str, required=True,
     help='output directory.')
+
 parser.add_argument(
     '-v', '--verbose',
     dest = 'verbose',
@@ -103,7 +94,6 @@ except OSError as exc:
 
 # load (columns of) dataset
 a = np.loadtxt(args.input, dtype = 'int').transpose()
-
 
 # load (or create) labels
 snv_labels = list()
