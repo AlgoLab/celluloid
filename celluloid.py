@@ -144,7 +144,9 @@ scs_outfile = os.path.join(args.outdir, filename + '_clustered' + ext)
 np.savetxt(scs_outfile, out_matrix, fmt='%d', delimiter=' ')
 
 # output mutation names
-filename, ext = os.path.splitext(os.path.basename(args.labels))
+filename, ext = 'LABELS', '.txt'
+if args.labels :
+    filename, ext = os.path.splitext(os.path.basename(args.labels))
 labels_outfile = os.path.join(args.outdir, filename + '_clustered' + ext)
 
 labels = km.labels_
