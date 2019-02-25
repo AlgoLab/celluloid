@@ -111,6 +111,7 @@ method = args.method
 if args.method.lower() == 'cao' :
 	method = 'Cao'
 
+# run k-modes
 km = KModes(
     n_clusters = args.k,
     cat_dissim = choose_dissim(args.dissim),
@@ -120,15 +121,23 @@ km = KModes(
 
 clusters = km.fit_predict(a)
 
-# Print the cluster centroids
+# obtain the clusters (of labels)
+labels = km.labels_
+d = defaultdict(list)
+i = 0
+for label in labels :
+    d[int(label)].append(snv_labels[i])
+    i += 1
 
+# store (only the non-empty) cluster centroids
 cs = km.cluster_centroids_
-out_matrix = list()
-for c in cs :
-    out_matrix.append(c)
-out_matrix = np.array(out_matrix).transpose()
+centroids = list()
+for key in d :
+    centroids.append(cs[key])
 
-# Output clustered matrix
+out_matrix = np.array(centroids).transpose()
+
+# output clustered matrix (the non-empty centroids)
 filename, ext = os.path.splitext(os.path.basename(args.input))
 scs_outfile = os.path.join(args.outdir, filename + '_clustered' + ext)
 np.savetxt(scs_outfile, out_matrix, fmt='%d', delimiter=' ')
@@ -138,13 +147,6 @@ filename, ext = 'LABELS', '.txt'
 if args.labels :
     filename, ext = os.path.splitext(os.path.basename(args.labels))
 labels_outfile = os.path.join(args.outdir, filename + '_clustered' + ext)
-
-labels = km.labels_
-d = defaultdict(list)
-i = 0
-for label in labels :
-    d[int(label)].append(snv_labels[i])
-    i += 1
 
 with open(labels_outfile, 'w+') as fout:
     for key in sorted(d) :
