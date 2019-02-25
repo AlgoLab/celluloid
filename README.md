@@ -56,3 +56,40 @@ optional arguments:
   -v, --verbose         verbose
 
 ```
+
+Replicating the experiments
+-----------------
+
+A workflow for reproducing the experiments of our study is described
+as a "Snakefile", which needs to be run with
+[snakemake](http://snakemake.bitbucket.org).
+
+**Overview**
+
+The workflow is designed to be run from this directory.  In principle,
+you only need to run `snakemake` here and then the rest is done
+automatically, but all dependencies need to be installed first.  To
+install dependencies, see [How to install](#how-to-install), and then
+install sasc:
+
+    git clone https://github.com/sciccolella/sasc
+    cd sasc && gcc -o sasc *.c -std=gnu99 -g -lm
+
+**Run the workflow**
+
+Start the workflow with
+
+    nice snakemake -p -j 16
+
+Adjust the 16, which is the number of cores you want to use.
+
+**Results**
+
+The resulting files for each dataset, _e.g._,
+`data/exp1/sim_1_scs.txt` will be reported in a directory named
+`data/exp1/sim_1.{parameters}.celluloid` (resp.,
+`data/exp1/sim_1.{parameters}.kmeans`) for the clustering -- and the
+downstream run of sasc -- with celluloid (resp., kmeans), where
+`{parameters}` are the parameters, _e.g._, initialization method,
+dissimilarity measure, k, associated with corresponding clustering
+method
