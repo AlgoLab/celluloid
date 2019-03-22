@@ -37,15 +37,15 @@ parser.add_argument(
     required=True)
 
 parser.add_argument(
-    '-m', '--method',
-    metavar = 'METHOD', dest = 'method',
+    '-m', '--method', dest = 'method',
     type = str, default = 'huang',
+    choices = ['huang', 'random'],
     help = 'initialization method')
 
 parser.add_argument(
-    '-d', '--dissim',
-    metavar = 'DISSIM', dest = 'dissim',
+    '-d', '--dissim', dest = 'dissim',
     type = str, default = 'conflict',
+    choices = ['conflict', 'matching'],
     help = 'dissimilarity measure')
 
 parser.add_argument(

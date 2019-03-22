@@ -33,8 +33,8 @@ Celluloid will output one _Single Cell file_ and one _Mutations file_ in the sam
 How to run
 -----------------
 ```
-usage: celluloid.py [-h] -i INPUT [-m METHOD] [-d DISSIM] [-n N] -k K
-                    [-l LABELS] -o OUTDIR [-v]
+usage: celluloid.py [-h] -i INPUT [-m {huang,random}] [-d {conflict,matching}]
+                    [-n N] -k K [-l LABELS] -o OUTDIR [-v]
 
 Celluloid: clustering single cell sequencing data around centroids
 
@@ -42,10 +42,10 @@ optional arguments:
   -h, --help            show this help message and exit
   -i INPUT, --input INPUT
                         input file
-  -m METHOD, --method METHOD
+  -m {huang,random}, --method {huang,random}
                         initialization method
-  -d DISSIM, --dissim DISSIM
-                        dissimilarity function
+  -d {conflict,matching}, --dissim {conflict,matching}
+                        dissimilarity measure
   -n N, --n_inits N     number of iterations
   -k K, --kmodes K      number of modes
   -l LABELS, --labels LABELS
@@ -53,7 +53,6 @@ optional arguments:
   -o OUTDIR, --outdir OUTDIR
                         output directory.
   -v, --verbose         verbose
-
 ```
 
 Replicating the experiments
