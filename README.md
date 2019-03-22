@@ -7,7 +7,6 @@ Install the dependecies of the tool, with `pip3 install kmodes` and then just cl
 
 ```bash
 git clone https://github.com/AlgoLab/celluloid.git
-cd celluloid
 ```
 
 Input formats
@@ -60,7 +59,10 @@ optional arguments:
 Replicating the experiments
 -----------------
 
-A workflow for reproducing the experiments of our study is described
+The preprint of an article outlining a study on Celluloid can be found
+at [https://doi.org/10.1101/586545](https://doi.org/10.1101/586545)
+
+A workflow for reproducing the experiments of this study is described
 as a "Snakefile", which needs to be run with
 [snakemake](http://snakemake.bitbucket.org).
 
@@ -70,7 +72,7 @@ The workflow is designed to be run from this directory.  In principle,
 you only need to run `snakemake` here and then the rest is done
 automatically, but all dependencies need to be installed first.  To
 install dependencies, see [How to install](#how-to-install), and then
-install sasc:
+install [sasc](https://github.com/sciccolella/sasc):
 
     git clone https://github.com/sciccolella/sasc
     cd sasc && gcc -o sasc *.c -std=gnu99 -g -lm
