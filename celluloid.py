@@ -2,7 +2,6 @@ import sys
 import argparse
 import numpy as np
 from kmodes.kmodes import KModes
-from kmodes.util.dissim import matching_dissim, ng_dissim
 from collections import defaultdict
 
 # the conflict dissimilarity measure
@@ -10,22 +9,13 @@ def conflict_dissim(a, b, **_) :
     v = np.vectorize(lambda ai, bi : ai != 2 and bi != 2 and ai != bi)
     return np.sum(v(a,b), axis = 1)
 
-# choose dissimilarity function
-def choose_dissim(dstr) :
-    if dstr == 'matching' :
-        return matching_dissim
-    if dstr == 'ng' :
-        return ng_dissim
-
-    return conflict_dissim # default
-
 #
 # Parser
 #----------------------------------------------------------------------
 
 parser = argparse.ArgumentParser(description = '''
 
-   Celluloid: clustering single cell sequencing data around centroids
+   celluloid: clustering single cell sequencing data around centroids
 
 ''')
 
@@ -35,18 +25,6 @@ parser.add_argument(
     type = str, default = sys.stdin,
     help = 'input file',
     required=True)
-
-parser.add_argument(
-    '-m', '--method', dest = 'method',
-    type = str, default = 'huang',
-    choices = ['huang', 'random'],
-    help = 'initialization method')
-
-parser.add_argument(
-    '-d', '--dissim', dest = 'dissim',
-    type = str, default = 'conflict',
-    choices = ['conflict', 'matching'],
-    help = 'dissimilarity measure')
 
 parser.add_argument(
     '-n', '--n_inits',
@@ -106,16 +84,11 @@ if args.labels:
 else:
     snv_labels = [str(x) for x in range(1, a.shape[0] + 1)]
 
-# to trigger the setting of n_init to 1 (small bug, really)
-method = args.method
-if args.method.lower() == 'cao' :
-	method = 'Cao'
-
 # run k-modes
 km = KModes(
     n_clusters = args.k,
-    cat_dissim = choose_dissim(args.dissim),
-    init = method,
+    cat_dissim = conflict_dissim,
+    init = 'huang',
     n_init = args.n,
     verbose = 1 if args.verbose else 0)
 
