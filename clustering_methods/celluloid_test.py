@@ -1,3 +1,6 @@
+import sys
+sys.path.insert(0, 'kmodes/')
+
 import numpy as np
 from kmodes.kmodes import KModes
 

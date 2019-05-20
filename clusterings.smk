@@ -161,6 +161,7 @@ rule run_celluloid:
         out_matrix = _out_folder_ + '/celluloid/sim_{sim}_scs_celluloid.matrix',
         out_mutations = _out_folder_ + '/celluloid/sim_{sim}_scs_celluloid.mutations',
     input:
+        flag = 'kmodes/README.rst',
         prgm = tools['celluloid'],
         sim_file = _data_folder_ + '/sim_{sim}_scs.txt'
     params:
@@ -180,6 +181,7 @@ rule run_kmodes:
         out_matrix = _out_folder_ + '/kmodes/sim_{sim}_scs_kmodes.matrix',
         out_mutations = _out_folder_ + '/kmodes/sim_{sim}_scs_kmodes.mutations',
     input:
+        flag = 'kmodes/README.rst',
         prgm = tools['kmodes'],
         sim_file = _data_folder_ + '/sim_{sim}_scs.txt'
     params:
@@ -192,3 +194,8 @@ rule run_kmodes:
                 -o {params.out_folder} \
                 -c mutations
         '''
+
+# obtain kmodes from git repo
+rule obtain_kmodes :
+    output : 'kmodes/README.rst'
+    shell : 'git clone https://github.com/nicodv/kmodes.git'
