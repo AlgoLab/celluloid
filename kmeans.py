@@ -3,7 +3,7 @@ from sklearn.cluster import KMeans
 
 import argparse, os, sys, errno
 
-parser = argparse.ArgumentParser(description='Single Cell Generator v2')
+parser = argparse.ArgumentParser(description='K-means clustering')
 parser.add_argument('-f', '--file', type=str, required=True,
                     help='SCS matrix')
 parser.add_argument('-k', type=int, required=True,
@@ -53,15 +53,15 @@ def cluster_and_output(k, matrix, clust_type, inputpath, outdir):
 
     out_matrix = np.transpose(np.array(out_matrix))
     
-    np.savetxt('{0}_kmean.matrix'.format(outfile), out_matrix, fmt='%d', delimiter=' ')
+    np.savetxt('{0}_kmeans.matrix'.format(outfile), out_matrix, fmt='%d', delimiter=' ')
 
-    with open('{0}_kmean_clusters.txt'.format(outfile), 'w+') as file_out:
+    with open('{0}_kmeans_clusters.txt'.format(outfile), 'w+') as file_out:
         for cluster in sorted(cluster_groups):
             file_out.write('{0}\t"{1}"\n'.format(
                 cluster, ','.join([ str(x+1) for x in cluster_groups[cluster]])
             ))
 
-    with open('{0}_kmean.mutations'.format(outfile), 'w+') as file_out:
+    with open('{0}_kmeans.mutations'.format(outfile), 'w+') as file_out:
         for cluster in sorted(cluster_groups):
             file_out.write('{0}\n'.format(
                 ','.join([ str(x+1) for x in cluster_groups[cluster]])
@@ -71,12 +71,15 @@ def cluster_and_output(k, matrix, clust_type, inputpath, outdir):
 
 
 if args.cluster == 'cells':
-    print('Clustering cells')
-    cluster_and_output(args.k, scs_matrix_input, args.cluster, args.file, args.outdir)
+    # print('Clustering cells')
+    # cluster_and_output(args.k, scs_matrix_input, args.cluster, args.file, args.outdir)
+    print('not fully implemented yet')
 elif args.cluster == 'mutations':
     scs_matrix_input = np.transpose(scs_matrix_input)
     print('Clustering mutations')
     cluster_and_output(args.k, scs_matrix_input, args.cluster, args.file, args.outdir)
+elif args.cluster == 'both':
+    print('not implemented yet')
 else:
     sys.exit('Something very wrong happened.')
 
