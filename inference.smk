@@ -1,5 +1,31 @@
+'''
 
-# SETTINGS TO BE PUT HERE
+IMPORTANT: this pipeline has been set up to run the downstream
+inference methods, namely scite and sphyr, under the assumption that
+they have been in installed in _toolsdir_ tools directory (below),
+more specifically, that the associated excecutables have been
+installed in tools dictionary of executables (below).  Now, provided
+all dependencies for these tools have been installed correctly, this
+pipeline will download, install and place these executables in the
+right place, but this is only contingent on the proper setup of the
+dependencies, which must be followed according to instructions at
+
+    https://github.com/cbg-ethz/SCITE (for scite)
+
+    https://github.com/elkebir-group/SPhyR (for sphyr)
+
+only after all such dependencies are installed, should this pipeline
+run rather automatically
+
+'''
+
+_toolsdir_ = 'inference_tools/tools' # tools directory
+
+tools = { # executables
+    'scite': _toolsdir_ + '/SCITE/scite',
+    'sphyr_run': _toolsdir_ + '/SPhyR/build/kDPFC',
+    'sphyr_vis': _toolsdir_ + '/SPhyR/build/visualize'
+}
 
 _exp_ = [1,2,3]
 
@@ -7,19 +33,13 @@ _clustering_folder_ = 'data/exp{exp}/{cluster}'
 
 _output_folder_ = 'data/inference/exp{exp}'
 
-_clusters_ = ['affinity', 'birch', 'agglomerative', 'spectral', 'kmeans', 'nocl',
-                'celluloid', 'kmodes']
+_clusters_ = ['affinity birch agglomerative spectral kmeans nocl celluloid kmodes'.split()
+
 _sim_ = 50
 
 convert = {
     'to_scite': 'inference_tools/convert/to_scite.py',
     'to_sphyr': 'inference_tools/convert/to_sphyr.py'
-}
-
-tools = {
-    'scite': 'inference_tools/tools/scite',
-    'sphyr_run': 'inference_tools/tools/sphyr/kDPFC',
-    'sphyr_vis': 'inference_tools/tools/sphyr/visualize'
 }
 
 _fn_ = 0.250000
@@ -147,3 +167,37 @@ rule convert_to_sphyr:
             python3 {input.prgm} -f {input.sasc_scs} -o {params.outdir} && \
             cp {input.mutations} {params.outdir}
         '''
+
+
+#
+# obtain and build scite
+#----------------------------------------------------------------------
+rule build_scite :
+    output : tools['scite']
+    input : _toolsdir_ + '/SCITE/README.md'
+    shell : 'cd {_toolsdir_}/SCITE && g++ -std=c++11 *.cpp -o scite'
+
+# obtain scite
+rule download_scite :
+    output : _toolsdir_ + '/SCITE/README.md'
+    message : 'downloading SCITE to {_toolsdir_}'
+    shell : 'cd {_toolsdir_} && git clone https://github.com/cbg-ethz/SCITE'
+
+
+# obtain and build sphyr
+#----------------------------------------------------------------------
+rule build_sphyr :
+    output :
+        run = tools['sphyr_run'],
+        vis = tools['sphyr_vis']
+
+    input : _toolsdir_ + '/SPhyR/README.md'
+    shell : '''
+
+   cd {_toolsdir_}/SPhyR && mkdir -p build && cd build && cmake .. && make '''
+
+# obtain sphyr
+rule download_sphyr :
+    output : _toolsdir_ + '/SPhyR/README.md'
+    message : 'downloading SPhyR to {_toolsdir_}'
+    shell : 'cd {_toolsdir_} && git clone https://github.com/elkebir-group/SPhyR.git'
