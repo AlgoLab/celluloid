@@ -1,4 +1,3 @@
-import load_clusters
 import sys
 import numpy as np
 import pandas as pd
@@ -7,6 +6,31 @@ from sklearn.metrics.cluster import adjusted_rand_score
 from sklearn.metrics.cluster import fowlkes_mallows_score
 from sklearn.metrics.cluster import completeness_score
 from sklearn.metrics.cluster import v_measure_score
+
+def load_cluster_file(file_path):
+    # from collections import defaultdict
+
+    # clusters = defaultdict(list)
+    clusters = dict()
+    point_to_clust = dict()
+    with open(file_path, 'r') as fin:
+        for line in fin:
+            clust, points = line.strip().split()
+            
+            clust = int(clust)
+            points = [int(x) for x in points.replace('"', '').split(',')]
+            
+            clusters[clust] = points
+
+            for p in points:
+                point_to_clust[p] = clust
+
+    point_prediction = [point_to_clust[x] for x in sorted(point_to_clust)]
+
+    return clusters, point_to_clust, point_prediction
+
+#if __name__ == '__main__':
+#    load_cluster_file('../test/sim_1_scs_kmean_clusters_cells.txt')
 
 def build_heatmap_matrix(labels, score):
     tot_clusters = len(labels)
@@ -282,16 +306,15 @@ if __name__ == '__main__':
         print('Usage: python3 clust_accuracies.py [EXPERIMENT_NUMBER]')
         sys.exit(1)
 
-
     folders = [
-        '../data/exp%d/ground' % exp,
-        '../data/exp%d/celluloid' % exp,
-        '../data/exp%d/kmodes' % exp,
-        '../data/exp%d/kmeans' % exp,
-        '../data/exp%d/affinity' % exp,
-        '../data/exp%d/agglomerative' % exp,
-        '../data/exp%d/birch' % exp,
-        '../data/exp%d/spectral' % exp
+        'data/exp%d/ground' % exp,
+        'data/exp%d/celluloid' % exp,
+        'data/exp%d/kmodes' % exp,
+        'data/exp%d/kmeans' % exp,
+        'data/exp%d/affinity' % exp,
+        'data/exp%d/agglomerative' % exp,
+        'data/exp%d/birch' % exp,
+        'data/exp%d/spectral' % exp
     ]
     filenames = [
         '%s/sim_%d_log_cluster_mutations.txt',
@@ -316,9 +339,9 @@ if __name__ == '__main__':
     tot_simulations = 50
 
     import os
-    if not os.path.exists('../plots/exp{0}'.format(exp)):
-        os.makedirs('../plots/exp{0}'.format(exp))
-    out_file = '../plots/exp{0}/exp{0}_plot_%s.pdf'.format(exp)
+    if not os.path.exists('plots'):
+        os.makedirs('plots')
+    out_file = 'plots/exp{0}_plot_%s.pdf'.format(exp)
 
     assert(len(folders) == len(filenames) == len(cluster_labels))
 
@@ -327,7 +350,7 @@ if __name__ == '__main__':
     for sim in range(1, tot_simulations+1):
         for c in range(len(clusters)):
             clusters[c].append(
-                load_clusters.load_cluster_file(filenames[c] % (folders[c], sim))
+                load_cluster_file(filenames[c] % (folders[c], sim))
             )
 
     # ---------------------------
