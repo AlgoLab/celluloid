@@ -17,28 +17,24 @@ tools = {
     'kmodes': 'clustering_methods/kmodes.py'
 }
 
-# rule draw_plots:
-#     input:
-#         expand('plots/exp{exp}_plot_pr.pdf',
-#                 exp=_exp_),
+rule draw_plots:
+    input:
+        expand('plots/exp{exp}_plot_pr.pdf', exp=_exp_),
 
-# rule draw_accuracy:
-#     output:
-#         plot = 'plots/exp{exp}_plot_pr.pdf'
-#     input:
-#         clust_done = 'clustering.done',
-#         prgm = 'clustering_accuracy/clust_accuracies.py',
-#     params:
-#         exp = '{exp}'
-#     shell:
-#         '''
-#             python3 {input.prgm} {params.exp}
-#         '''
-
+rule draw_accuracy:
+    output:
+        plot = 'plots/exp{exp}_plot_pr.pdf'
+    input:
+        flag = 'clustering.done',
+        prgm = 'clustering_accuracy/clust_accuracies.py',
+    shell:
+        '''
+            python3 {input.prgm} {wildcards.exp}
+        '''
 
 rule run_tools:
-    # output:
-    #     touch('clustering.done')
+    output:
+        touch('clustering.done')
     input:
         expand(_out_folder_ + '/affinity/sim_{sim}_scs_affinity_clusters.txt', sim = range(1, _sim_ + 1),
                 exp=_exp_),
