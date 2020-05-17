@@ -1,0 +1,6 @@
+@@grammar :: SASC
+@@whitespace ::  /(?s)[ \t\r\f\v]+/
+start = file $ ;
+cell = "0" ~ | "1" ~ | "2" ~ ;
+row = {cell};
+file = ("\n").{ row } ;

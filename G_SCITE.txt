@@ -1,6 +1,0 @@
-@@grammar :: SCITE
-@@whitespace ::  /(?s)[ \t\r\f\v]+/
-start = file $ ;
-cell = "0" ~ | "1" ~ | "2" ~ | "3" ~ ;
-row = {cell};
-file = ("\n").{ row } ;

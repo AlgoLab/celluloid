@@ -1,9 +1,0 @@
-@@grammar :: SPHYR
-@@whitespace ::  /(?s)[ \t\r\f\v]+/
-@@eol_comments :: /#([^\n]*?)$/
-start = cell_number_line "\n" snv_number_line "\n" file $ ;
-cell_number_line = /\d+/;
-snv_number_line = /\d+/;
-cell = "0" ~ | "1" ~ | "-1" ~ ;
-row = {cell};
-file = ("\n").{row};
