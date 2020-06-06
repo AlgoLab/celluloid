@@ -1,15 +1,16 @@
 import argparse
 import sys
-from inference_tools.convert.parserSASC import SASCParser
-from inference_tools.convert.parserSCITE import SCITEParser
-from inference_tools.convert.parserSPHYR import SPHYRParser
+from parserSASC import SASCParser
+from parserSCITE import SCITEParser
+from parserSPHYR import SPHYRParser
 from tatsu.exceptions import FailedParse
 
 
-def parse_file(file_name, file_format):
-    # reads the input file
-    with open(file_name, "r") as input_file:
-        file_str = input_file.read()
+class NotAMatrix(Exception):
+    pass
+
+
+def parse_string(file_as_string, file_format):
     parser_dict = {
         "SASC": SASCParser,
         "SCITE": SCITEParser,
@@ -17,12 +18,16 @@ def parse_file(file_name, file_format):
     }
     file_parser = parser_dict[file_format]()
     try:
-        ast = file_parser.parse(file_str, rule_name='start')
+        ast = file_parser.parse(file_as_string, rule_name='start')
     except FailedParse:
-        print("wrong input format")
         raise
+    if file_format == "SPHYR":
+        ast = ast[4]
     # remove empty lines
     ast = [row for row in ast if row != []]
+    for row in ast:
+        if len(row) != len(ast[0]):
+            raise NotAMatrix("Number of cells per row varies")
     return ast
 
 
@@ -39,16 +44,10 @@ def translate(input_ast, format1, format2):
         "SCITE": True,
         "SPHYR": False
     }
-    # handles the header of the SPHYR format
-    if format1 == "SPHYR":
-        # cells and SNVs maybe not needed
-        cells_number = input_ast[0]
-        SNVs_number = input_ast[2]
-        input_ast = input_ast[4]
 
     # Change 1s and 2s in SCITE to only 1s, since they both represent a mutation
     if format1 == "SCITE":
-        input_ast = [[1 if a == 2 else a for a in row] for row in input_ast]
+        input_ast = [['1' if a == '2' else a for a in row] for row in input_ast]
 
     # changes the values of the "no info" character from the one of the input format to the one of the output format
     ast_translated = [[a if a != no_info[format1] else no_info[format2] for a in row] for row in input_ast]
@@ -103,19 +102,23 @@ if __name__ == "__main__":
     output_file_name = args.outfile
     input_file_name = args.file
 
-    # reads the file and parses it
-    ast = parse_file(input_file_name, format_from)
-    print(ast)
+
+    # reads the input file
+    with open(input_file_name, "r") as input_file:
+        file_str = input_file.read()
+    # parses the input file
+    try:
+        ast = parse_string(file_str, format_from)
+    except FailedParse:
+        print("wrong input format")
+        sys.exit(0)
+    except NotAMatrix:
+        print("input is not a matrix")
+        sys.exit(0)
     # translates the parsed file into the desired format
     ast_changed = translate(ast, format_from, format_to)
-    print(ast_changed)
     # writes the file
     write_file(ast_changed, output_file_name, format_to)
-    write_file(ast_changed, None, format_to)
-    test_ast = [['2', '1', '2', '0'], ['2', '0', '0', '0'], ['0', '1', '0', '0'], ['0', '1', '2', '0']]
-    print(test_ast)
-    test_ast2 = translate(test_ast, format_from, format_to)
-    print(test_ast2)
 
 
 
