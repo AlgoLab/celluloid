@@ -65,7 +65,7 @@ def write_file(ast_translated, file_name, file_format):
         # SPHYR needs its header
         if file_format == "SPHYR":
             sys.stdout.write(str(len(ast_translated)) + " #cells\n")
-            sys.stdout.write(str(len(ast_translated[1])) + " #SNVs\n")
+            sys.stdout.write(str(len(ast_translated[0])) + " #SNVs\n")
         for row in ast_translated:
             for cell in row:
                 sys.stdout.write(cell)
@@ -76,7 +76,7 @@ def write_file(ast_translated, file_name, file_format):
             # SPHYR needs its header
             if file_format == "SPHYR":
                 file.write(str(len(ast_translated)) + " #cells\n")
-                file.write(str(len(ast_translated[1])) + " #SNVs\n")
+                file.write(str(len(ast_translated[0])) + " #SNVs\n")
             for row in ast_translated:
                 for cell in row:
                     file.write(cell)
