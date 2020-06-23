@@ -1,8 +1,8 @@
 import argparse
 import sys
-from parserSASC import SASCParser
-from parserSCITE import SCITEParser
-from parserSPHYR import SPHYRParser
+from .parserSASC import SASCParser
+from .parserSCITE import SCITEParser
+from .parserSPHYR import SPHYRParser
 from tatsu.exceptions import FailedParse
 
 
@@ -84,24 +84,13 @@ def write_file(ast_translated, file_name, file_format):
                 file.write("\n")
 
 
-if __name__ == "__main__":
-    # command line options
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-o", "--outputFormat", help="Format to translate the input to (default is SASC)",
-                        choices=["SASC", "SCITE", "SPHYR"])
-    parser.add_argument("-i", "--inputFormat", help="Format to translate the input from (default is SASC)",
-                        choices=["SASC", "SCITE", "SPHYR"])
-    parser.add_argument("--outfile", help="Output file (default is stdout)")
-    parser.add_argument("file", type=str, help="Input file")
-    args = parser.parse_args()
-
+def convert(arguments):
     # gets the input and output format from command line, defaults to SASC if none are given
-    format_to = args.outputFormat if args.outputFormat else "SASC"
-    format_from = args.inputFormat if args.inputFormat else "SASC"
+    format_to = arguments.outputFormat if arguments.outputFormat else "SASC"
+    format_from = arguments.inputFormat if arguments.inputFormat else "SASC"
     # gets output and input file names from command line
-    output_file_name = args.outfile
-    input_file_name = args.file
-
+    output_file_name = arguments.outfile
+    input_file_name = arguments.file
 
     # reads the input file
     with open(input_file_name, "r") as input_file:
@@ -119,6 +108,35 @@ if __name__ == "__main__":
     ast_changed = translate(ast, format_from, format_to)
     # writes the file
     write_file(ast_changed, output_file_name, format_to)
+
+
+if __name__ == "__main__":
+    # command line options
+    convert_parser = argparse.ArgumentParser()
+
+    convert_parser.add_argument(
+        "-o",
+        "--outputFormat",
+        help="Format to translate the input to (default is SASC)",
+        choices=["SASC", "SCITE", "SPHYR"])
+
+    convert_parser.add_argument(
+        "-i",
+        "--inputFormat",
+        help="Format to translate the input from (default is SASC)",
+        choices=["SASC", "SCITE", "SPHYR"])
+
+    convert_parser.add_argument(
+        "--outfile",
+        help="Output file (default is stdout)")
+
+    convert_parser.add_argument("file",
+                                help="Input file")
+
+    args = convert_parser.parse_args()
+    convert(args)
+
+
 
 
 
