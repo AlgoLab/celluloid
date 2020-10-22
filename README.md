@@ -1,12 +1,14 @@
 # celluloid
+[![PyPI version](https://badge.fury.io/py/celluloid-clust.svg)](https://badge.fury.io/py/celluloid-clust)
+
+
 Celluloid: clustering single cell sequencing data around centroids
 
 How to install
 -----------------
-Install the dependecies of the tool, with `pip3 install kmodes` and then just clone this repository:
 
 ```bash
-git clone https://github.com/AlgoLab/celluloid.git
+pip3 install celluloid/clust
 ```
 
 Input formats

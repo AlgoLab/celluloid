@@ -18,8 +18,8 @@ A detailed description of the module is available on our [github repo](https://g
 '''
 
 setuptools.setup(
-    name="celluloid",
-    version="1.2.3",
+    name="celluloidclust",
+    version="1.2.5",
     author="Murray Patterson",
     author_email="mpatterson@cs.gsu.edu",
     description="Effective Clustering for Single Cell Sequencing Cancer Data",
@@ -28,8 +28,8 @@ setuptools.setup(
     url="https://github.com/AlgoLab/celluloid",
     packages=setuptools.find_packages(),
     install_requires=[
-        'TatSu>=5.0.0',
-        'kmodes>=0.10.0'
+        'TatSu>=5.5.0',
+        'kmodes>=0.10.2'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
