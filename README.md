@@ -8,7 +8,7 @@ How to install
 -----------------
 
 ```bash
-pip3 install celluloid/clust
+pip3 install celluloid-clust
 ```
 
 Input formats
