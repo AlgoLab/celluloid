@@ -22,10 +22,17 @@ DELIMITER = ' '
 
 inp = np.genfromtxt(args.file, delimiter = DELIMITER, dtype=int)
 
+n = inp.shape[0]
+m = 1
+if len(inp.shape) > 1 :
+        m = inp.shape[1]
+else :
+        inp = np.reshape(inp, (n,1))
+
 matrix_input = np.transpose(inp)
 
-for i in range(matrix_input.shape[0]):
-	for j in range(matrix_input.shape[1]):
+for i in range(m):
+	for j in range(n):
 		if matrix_input[i, j] == 2:
 			matrix_input[i, j] = 3
 
@@ -35,5 +42,5 @@ outfile = os.path.join(args.out, filename)
 np.savetxt('%s.in' % outfile, matrix_input, delimiter=' ', fmt='%i')
 
 with open('%s.geneNames' % outfile, 'w+') as names:
-    for name in range(1, matrix_input.shape[0] + 1):
+    for name in range(1, m + 1):
         names.write('%s\n' % name)
