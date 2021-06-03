@@ -33,7 +33,7 @@ _clustering_folder_ = 'data/exp{exp}/{cluster}'
 
 _output_folder_ = 'data/inference/exp{exp}'
 
-_clusters_ = ['affinity birch agglomerative spectral kmeans nocl celluloid kmodes'.split()
+_clusters_ = 'affinity birch agglomerative spectral kmeans celluloid kmodes'.split()
 
 _sim_ = 50
 
