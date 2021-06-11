@@ -24,7 +24,8 @@ _toolsdir_ = 'inference_tools/tools' # tools directory
 tools = { # executables
     'scite': _toolsdir_ + '/SCITE/scite',
     'sphyr_run': _toolsdir_ + '/SPhyR/build/kDPFC',
-    'sphyr_vis': _toolsdir_ + '/SPhyR/build/visualize'
+    'sphyr_vis': _toolsdir_ + '/SPhyR/build/visualize',
+    'sasc' : _toolsdir_ + '/sasc/sasc',
 }
 
 _exp_ = [1,2,3]
@@ -49,17 +50,21 @@ _sphyr_k_ = 0
 # ---------------------------------
 # --------- Run tools -------------
 # ---------------------------------
+
 rule run_tools:
     input:
-        expand(_output_folder_ + '/scite/{cluster}/sim_{sim}_scs_{cluster}_ml0.gv', 
-            sim = range(1, _sim_ + 1), 
-            cluster = _clusters_, 
-            exp = _exp_),
+        expand(_output_folder_ + '/scite/{cluster}/sim_{sim}_scs_{cluster}_ml0.gv',
+               sim = range(1, _sim_ + 1),
+               cluster = _clusters_,
+               exp = _exp_),
         expand(_output_folder_ + '/sphyr/{cluster}/sim_{sim}_scs_{cluster}.gv',
-            sim = range(1, _sim_ + 1), 
-            cluster = _clusters_, 
-            exp = _exp_)
-
+               sim = range(1, _sim_ + 1),
+               cluster = _clusters_,
+               exp = _exp_),
+        expand(_output_folder_ + '/sasc/{cluster}/sim_{sim}_scs_{cluster}_mlt.gv',
+               sim = range(1, _sim_ + 1),
+               cluster = _clusters_,
+               exp = _exp_),
 
 rule run_scite:
     output:
@@ -110,6 +115,34 @@ rule run_sphyr:
                 -c {input.sphyr_genenames} \
                 -t {input.sphyr_cellnames} > {output.sphyr_vis}
         '''
+
+rule run_sasc:
+    output:
+        sasc_result = _output_folder_ + '/sasc/{cluster}/sim_{sim}_scs_{cluster}_mlt.gv'
+    input:
+        prgm = tools['sasc'],
+        sasc_scs = _output_folder_ + '/sasc/{cluster}/sim_{sim}_scs_{cluster}.matrix',
+    params:
+        fn_rate = _fn_,
+        fp_rate = _fp_,
+        k = _sphyr_k_,
+    threads: 4
+    benchmark:
+        'benchmark/inference/exp{exp}/sasc/{cluster}/sim_{sim}.benchmark.txt'
+    run:
+        with open(input.sasc_scs) as mat:
+            m = len(mat.readline().split())
+            n = sum(1 for line in mat) + 1
+
+        shell('''
+
+  {input.prgm} -i {input.sasc_scs} \
+    -m {m} -n {n} -r 10 \
+    -b {params.fp_rate} -a {params.fn_rate} \
+    -k {params.k} -x \
+    -S 100000.0 -C 0.001 \
+    -p {threads} ''')
+
 
 # ---------------------------------
 # ------- Prepare sim data --------
@@ -168,6 +201,19 @@ rule convert_to_sphyr:
             cp {input.mutations} {params.outdir}
         '''
 
+rule convert_to_sasc:
+    output:
+        out_scs = _output_folder_ + '/sasc/{cluster}/sim_{sim}_scs_{cluster}.matrix',
+        mutations_scs = _output_folder_ + '/sasc/{cluster}/sim_{sim}_scs_{cluster}.mutations',
+    input:
+        sasc_scs = _clustering_folder_ + '/sim_{sim}_scs_{cluster}.matrix',
+        mutations = _clustering_folder_ + '/sim_{sim}_scs_{cluster}.mutations',
+    params:
+        outdir = _output_folder_ + '/sasc/{cluster}'
+    shell: '''
+
+  cp {input.sasc_scs} {params.outdir} && cp {input.mutations} {params.outdir} '''
+
 
 #
 # obtain and build scite
@@ -201,3 +247,17 @@ rule download_sphyr :
     output : _toolsdir_ + '/SPhyR/README.md'
     message : 'downloading SPhyR to {_toolsdir_}'
     shell : 'cd {_toolsdir_} && git clone https://github.com/elkebir-group/SPhyR.git'
+
+
+# obtain and build sasc
+#----------------------------------------------------------------------
+rule build_sasc :
+    output : tools['sasc']
+    input : _toolsdir_ + '/sasc/README.md'
+    shell : 'cd {_toolsdir_}/sasc && make'
+
+# obtain sasc
+rule download_sasc :
+    output : _toolsdir_ + '/sasc/README.md'
+    message : 'downloading SASC to {_toolsdir_}'
+    shell : 'cd {_toolsdir_} && git clone https://github.com/sciccolella/sasc.git'
